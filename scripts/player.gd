@@ -7,6 +7,7 @@ extends CharacterBody2D
 var graph_manager: GraphManager
 var marker_nodes: Dictionary = {}
 var waypoints_parent: Node2D
+var enemy: CharacterBody2D = null  # Referência ao inimigo
 # Sistema de névoa removido
 
 # Sistema de posição atual
@@ -31,6 +32,9 @@ func _ready():
 	if graph_manager:
 		waypoints_parent = graph_manager.waypoints_parent
 		_load_marker_positions()
+	
+	# Buscar referência ao inimigo
+	enemy = get_node("../Enemy")
 	
 	# Posicionar no marcador inicial - IMPORTANTE: fazer isso após carregar as posições
 	_position_at_marker0()
@@ -384,6 +388,25 @@ func _print_available_neighbors():
 	else:
 		print("  → Vizinhos disponíveis: ", neighbors)
 
+func _respawn_enemy_at_start():
+	"""Respawna o inimigo na posição inicial (Marker0) quando colidir com o player"""
+	if not enemy:
+		return
+	
+	if not marker_nodes.has("Marker0"):
+		print("ERRO: Marker0 não encontrado para respawn do inimigo!")
+		return
+	
+	# Respawnar o inimigo no Marker0
+	var marker0_pos = marker_nodes["Marker0"]
+	enemy.global_position = marker0_pos
+	
+	# Resetar o estado do inimigo (reiniciar o caminho)
+	if enemy.has_method("reset_to_start"):
+		enemy.reset_to_start()
+	
+	print("⚠️ COLISÃO COM INIMIGO! Inimigo respawnado em Marker0")
+
 func _physics_process(delta):
 	# Garantir que o movimento do tween seja processado suavemente
 	# O tween já atualiza global_position automaticamente, mas podemos
@@ -395,5 +418,23 @@ func _physics_process(delta):
 	else:
 		# Quando não está se movendo, também garantir que não há velocidade residual
 		velocity = Vector2.ZERO
+	
+	# Verificar colisão com o inimigo
+	_check_enemy_collision()
+
+func _check_enemy_collision():
+	"""Verifica se o player colidiu com o inimigo e respawna se necessário"""
+	if not enemy:
+		return
+	
+	# Calcular distância entre player e inimigo
+	var distance = global_position.distance_to(enemy.global_position)
+	
+	# Distância de colisão (ajustar conforme necessário, baseado no tamanho dos sprites)
+	var collision_distance = 30.0  # pixels
+	
+	if distance < collision_distance:
+		# Colisão detectada! Respawnar o inimigo na posição inicial (Marker0)
+		_respawn_enemy_at_start()
 	
 # Atualização de névoa removida

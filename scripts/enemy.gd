@@ -5,6 +5,7 @@ var steps = []
 var current_step = 0
 var graph_manager
 var marker_nodes = {}
+var current_tween: Tween = null  # Referência ao tween atual
 
 func _ready():
 	graph_manager = get_node("../GraphManager")
@@ -39,9 +40,12 @@ func _move_next_step():
 		"visit", "move_to":
 			if marker_nodes.has(node_name):
 				var target_pos = marker_nodes[node_name]
-				var tween = create_tween()
-				tween.tween_property(self, "global_position", target_pos, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-				tween.finished.connect(func(): _next_step())
+				# Cancelar tween anterior se existir
+				if current_tween and current_tween.is_valid():
+					current_tween.kill()
+				current_tween = create_tween()
+				current_tween.tween_property(self, "global_position", target_pos, 0.8).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+				current_tween.finished.connect(func(): _next_step())
 		"backtrack":
 			var target_index = current_step - 1
 			while target_index >= 0 and steps[target_index]["action"] == "backtrack":
@@ -51,10 +55,29 @@ func _move_next_step():
 				var prev_node = step["node"]
 				if marker_nodes.has(prev_node):
 					var target_pos = marker_nodes[prev_node]
-					var tween = create_tween()
-					tween.tween_property(self, "global_position", target_pos, 0.8)
-					tween.finished.connect(func(): _next_step())
+					# Cancelar tween anterior se existir
+					if current_tween and current_tween.is_valid():
+						current_tween.kill()
+					current_tween = create_tween()
+					current_tween.tween_property(self, "global_position", target_pos, 0.8)
+					current_tween.finished.connect(func(): _next_step())
 
 func _next_step():
 	current_step += 1
+	_move_next_step()
+
+func reset_to_start():
+	"""Reseta o inimigo para o início do caminho"""
+	current_step = 0
+	
+	# Cancelar qualquer movimento em andamento
+	if current_tween and current_tween.is_valid():
+		current_tween.kill()
+		current_tween = null
+	
+	# Reposicionar no Marker0
+	if marker_nodes.has("Marker0"):
+		global_position = marker_nodes["Marker0"]
+	
+	# Reiniciar movimento
 	_move_next_step()
