@@ -242,6 +242,12 @@ position = Vector2(-139, 911)
 [node name="Marker44" type="Marker2D" parent="Waypoints/Marker45"]
 position = Vector2(212, 911)
 
+[node name="Marker47" type="Marker2D" parent="Waypoints"]
+position = Vector2(-1016, -1901)
+
+[node name="Marker44" type="Marker2D" parent="Waypoints/Marker47"]
+position = Vector2(1102, 3139)
+
 [node name="GraphManager" type="Node" parent="."]
 script = ExtResource("1_lnu2h")
 

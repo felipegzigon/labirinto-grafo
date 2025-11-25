@@ -390,6 +390,11 @@ func _on_movement_complete(marker_name: String):
 		_show_win_screen()
 		return
 	
+	# Verificar se chegou no Marker47 (easter egg)
+	if marker_name == "Marker47":
+		_show_easter_egg_screen()
+		return
+	
 	_print_available_neighbors()
 
 # Funções de névoa removidas
@@ -535,6 +540,70 @@ func _restart_from_win():
 	var win_layer = get_tree().root.get_node_or_null("WinLayer")
 	if win_layer:
 		win_layer.queue_free()
+	
+	# Despausar o jogo antes de reiniciar
+	get_tree().paused = false
+	
+	# Reiniciar a cena atual
+	get_tree().reload_current_scene()
+
+func _show_easter_egg_screen():
+	"""Exibe tela de easter egg e pausa o jogo"""
+	print("🥚 EASTER EGG! Chegou no Marker47!")
+	
+	# Pausar o jogo
+	get_tree().paused = true
+	
+	# Criar CanvasLayer para a tela de easter egg
+	var easter_egg_layer = CanvasLayer.new()
+	easter_egg_layer.name = "EasterEggLayer"
+	get_tree().root.add_child(easter_egg_layer)
+	
+	# Criar fundo escuro
+	var background = ColorRect.new()
+	background.color = Color(0, 0, 0, 0.8)  # Preto semi-transparente
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	background.set_offsets_preset(Control.PRESET_FULL_RECT)
+	easter_egg_layer.add_child(background)
+	
+	# Criar container central para organizar elementos
+	var container = VBoxContainer.new()
+	container.set_anchors_preset(Control.PRESET_CENTER)
+	container.add_theme_constant_override("separation", 30)
+	easter_egg_layer.add_child(container)
+	
+	# Criar label de Easter Egg
+	var label = Label.new()
+	label.text = "EASTER EGG!"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 72)
+	label.add_theme_color_override("font_color", Color(1, 0.84, 0))  # Dourado
+	container.add_child(label)
+	
+	# Criar label de mensagem (você pode personalizar esta mensagem)
+	var message_label = Label.new()
+	message_label.text = "Você foi molestado"
+	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message_label.add_theme_font_size_override("font_size", 32)
+	message_label.add_theme_color_override("font_color", Color(1, 1, 1))  # Branco
+	container.add_child(message_label)
+	
+	# Criar botão de recomeçar
+	var restart_button = Button.new()
+	restart_button.text = "Recomeçar"
+	restart_button.add_theme_font_size_override("font_size", 36)
+	restart_button.custom_minimum_size = Vector2(200, 60)
+	restart_button.pressed.connect(_restart_from_easter_egg)
+	container.add_child(restart_button)
+
+func _restart_from_easter_egg():
+	"""Remove a tela de easter egg, despausa e reinicia o jogo"""
+	print("Reiniciando jogo após easter egg...")
+	
+	# Remover tela de easter egg
+	var easter_egg_layer = get_tree().root.get_node_or_null("EasterEggLayer")
+	if easter_egg_layer:
+		easter_egg_layer.queue_free()
 	
 	# Despausar o jogo antes de reiniciar
 	get_tree().paused = false

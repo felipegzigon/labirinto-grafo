@@ -80,6 +80,7 @@ func _build_graph():
 	graph.add_node("Marker34a")  # Transição Marker34 -> Marker35
 	graph.add_node("Marker39a")  # Transição Marker39 -> Marker40
 	graph.add_node("Marker46a")
+	graph.add_node("Marker47")
 
 	# Adicionar arestas (conexões) entre os marcadores
 	# Conexões existentes
@@ -150,6 +151,7 @@ func _build_graph():
 	graph.add_edge("Marker44", "Marker45")
 	graph.add_edge("Marker41", "Marker43")
 	graph.add_edge("Marker41", "Marker12")
+	graph.add_edge("Marker47", "Marker25")
 
 
 
