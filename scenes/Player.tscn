@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://dtdj7dh15u6os"]
+[gd_scene load_steps=7 format=3 uid="uid://dtdj7dh15u6os"]
 
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player_script"]
 [ext_resource type="Texture2D" uid="uid://c87mhsxmf8tav" path="res://assets/player.png" id="1_p0vlq"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v6fml"]
@@ -26,6 +27,7 @@ animations = [{
 radius = 23.086792
 
 [node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_player_script")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(-0.8125, -4)
@@ -35,3 +37,6 @@ animation = &"player"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_p0vlq")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = true

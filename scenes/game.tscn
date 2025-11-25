@@ -57,8 +57,8 @@ sources/0 = SubResource("TileSetAtlasSource_lbhrr")
 
 [node name="Game" type="Node2D"]
 
-[node name="Player" parent="." instance=ExtResource("1_uwrxv")]
-position = Vector2(1342, 915)
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = -10
 
 [node name="TileMap" type="TileMap" parent="."]
 position = Vector2(-2.026558e-06, 0.9999999)
@@ -66,40 +66,187 @@ scale = Vector2(7, 7)
 tile_set = SubResource("TileSet_iywne")
 rendering_quadrant_size = 24
 format = 2
-layer_0/tile_data = PackedInt32Array(196610, 65536, 1342177281, 131074, 131072, 1, 131075, 65536, 0, 131076, 196608, 1879048192, 65541, 0, 268435456, 6, 0, 268435457, 65542, 0, 536870914, 5, 0, 268435458, 131077, 0, 536870914, 65540, 0, 268435458, 131073, 65536, 0, 65536, 65536, 1342177280, 0, 131072, 0, 1, 65536, 0, 2, 196608, 1879048192, 65535, 196608, 2, 131071, 262144, 1342177281, -65533, 0, 1342177280, 3, 0, 1342177282, -65534, 0, 1610612738, -65536, 65536, 1342177280, -131072, 131072, 0, -65537, 65536, 0, -65538, 262144, 1610612736, -131075, 0, 0, -3, 0, 1342177280, -65539, 196608, 1610612739, -2, 0, 1342177282, -131074, 0, 2, 65532, 196608, 0, 131068, 65536, 1342177280, 65533, 0, 1342177282, -4, 0, 1610612738, 196604, 131072, 0, 196605, 65536, 0, -196610, 65536, 3, -196609, 131072, 3, -262145, 0, 1342177280, -196608, 65536, 1342177280, -262144, 131072, 0, -262143, 65536, 0, -262142, 131072, 1342177282, 131072, 131072, 1073741825, 196608, 65536, 1610612736, 262144, 131072, 805306370, 327679, 65536, 0, 327678, 65536, 268435457, -65532, 65536, 536870914, 4, 65536, 1342177281, -131068, 196608, 536870913, -131069, 0, 1610612738, 196606, 262144, 1, 196607, 196608, 1879048194, -262146, 0, 1610612738, -196606, 196608, 536870914, -196603, 0, 1342177280, -131067, 0, 1342177282, -196604, 0, 1610612738, -262138, 196608, 1073741824, -196602, 0, 1342177282, -262139, 0, 1610612738, 262140, 196608, 805306370, 196603, 196608, 2, 262139, 131072, 1610612738, -131076, 0, 805306370, -196611, 0, 2, -327680, 131072, 1073741827, -393216, 65536, 1073741827, -327681, 0, 1610612738, -196612, 196608, 1342177280, -196615, 0, 2, -131079, 0, 0, -196614, 131072, 1610612737, -131078, 65536, 2, -65542, 65536, 1610612739, -131080, 0, 805306370, -65543, 0, 805306370, -196613, 65536, 0, -262150, 65536, 1610612736, -327686, 196608, 0, -393221, 0, 1342177280, -327685, 0, 1342177282, -393222, 0, 1610612738, -458756, 196608, 1073741824, -393220, 0, 1342177282, -458757, 0, 1610612738, -196605, 131072, 805306370, -262141, 65536, 1610612736, -327677, 131072, 1, -131071, 65536, 0, -131070, 65536, 1, -262137, 196608, 1879048194, -327673, 131072, 268435458, -327674, 65536, 0, -327675, 262144, 2, -327676, 131072, 268435459, -393212, 0, 0, -393211, 0, 2, -458749, 196608, 1342177280, -458748, 0, 2, -393213, 0, 805306370, -589823, 327680, 3, -655360, 131072, 2, -589824, 65536, 1610612736, -524288, 131072, 536870913, -458755, 65536, 0, -458753, 65536, 0, -458754, 131072, 0, -524290, 65536, 1610612736, -393218, 196608, 536870914, -393217, 65536, 1, -458751, 131072, 1610612737, -327678, 65536, 0, -327679, 131072, 1610612738, -393215, 65536, 1610612736, -458750, 65536, 0, -524287, 196608, 268435458, -589822, 196608, 1879048194, -655358, 196608, 268435458, -655359, 65536, 0, -196616, 0, 1, -589828, 262144, 2, -589827, 65536, 0, -655365, 0, 0, -720902, 0, 1, -720901, 0, 2, -655366, 0, 805306370, -589829, 131072, 268435459, -655364, 0, 2, -589830, 65536, 268435457, -589826, 131072, 268435458, 65537, 327680, 0, 65539, 327680, 0, 65538, 327680, 0)
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(409, 285)
+layer_0/tile_data = PackedInt32Array(196610, 65536, 1342177281, 131074, 131072, 1, 131075, 65536, 0, 131076, 196608, 1879048192, 65541, 0, 268435456, 6, 0, 268435457, 65542, 0, 536870914, 5, 0, 268435458, 131077, 0, 536870914, 65540, 0, 268435458, 131073, 65536, 0, 65536, 65536, 1342177280, 0, 131072, 0, 1, 65536, 0, 2, 196608, 1879048192, 65535, 196608, 2, 131071, 262144, 1342177281, -65533, 0, 1342177280, 3, 0, 1342177282, -65534, 0, 1610612738, -65536, 65536, 1342177280, -131072, 131072, 0, -65537, 65536, 0, -65538, 262144, 1610612736, -131075, 0, 0, -3, 0, 1342177280, -65539, 196608, 1610612739, -2, 0, 1342177282, -131074, 0, 2, 65532, 196608, 0, 131068, 65536, 1342177280, 65533, 0, 1342177282, -4, 0, 1610612738, 196604, 131072, 0, 196605, 65536, 0, -196610, 65536, 3, -196609, 131072, 3, -262145, 0, 1342177280, -196608, 65536, 1342177280, -262144, 131072, 0, -262143, 65536, 0, -262142, 131072, 1342177282, 131072, 131072, 1073741825, 196608, 65536, 1610612736, 262144, 131072, 805306370, 327679, 65536, 0, 327678, 65536, 268435457, -65532, 65536, 536870914, 4, 65536, 1342177281, -131068, 196608, 536870913, -131069, 0, 1610612738, 196606, 262144, 1, 196607, 196608, 1879048194, -262146, 0, 1610612738, -196606, 196608, 536870914, -196603, 0, 1342177280, -131067, 0, 1342177282, -196604, 0, 1610612738, -262138, 196608, 1073741824, -196602, 0, 1342177282, -262139, 0, 1610612738, 262140, 196608, 805306370, 196603, 196608, 2, 262139, 131072, 1610612738, -131076, 0, 805306370, -196611, 0, 2, -327680, 131072, 1073741827, -393216, 65536, 1073741827, -327681, 0, 1610612738, -196612, 196608, 1342177280, -196615, 0, 2, -131079, 0, 0, -196614, 131072, 1610612737, -131078, 65536, 2, -65542, 65536, 1610612739, -131080, 0, 805306370, -65543, 0, 805306370, -196613, 65536, 0, -262150, 65536, 1610612736, -327686, 196608, 0, -393221, 0, 1342177280, -327685, 0, 1342177282, -393222, 0, 1610612738, -458756, 196608, 1073741824, -393220, 0, 1342177282, -458757, 0, 1610612738, -196605, 131072, 805306370, -262141, 65536, 1610612736, -327677, 131072, 1, -131071, 65536, 0, -131070, 65536, 1, -262137, 196608, 1879048194, -327673, 131072, 268435458, -327674, 65536, 0, -327675, 262144, 2, -327676, 131072, 268435459, -393212, 0, 0, -393211, 0, 2, -458749, 196608, 1342177280, -458748, 0, 2, -393213, 0, 805306370, -589823, 327680, 3, -655360, 131072, 2, -589824, 65536, 1610612736, -524288, 131072, 536870913, -458755, 65536, 0, -458753, 65536, 0, -458754, 131072, 0, -524290, 65536, 1610612736, -393218, 196608, 536870914, -393217, 65536, 1, -458751, 131072, 1610612737, -327678, 65536, 0, -327679, 131072, 1610612738, -393215, 65536, 1610612736, -458750, 65536, 0, -524287, 196608, 268435458, -589822, 196608, 1879048194, -655358, 131072, 1342177282, -655359, 65536, 0, -196616, 0, 1, -589828, 262144, 2, -589827, 65536, 0, -655365, 0, 0, -720902, 0, 1, -720901, 0, 2, -655366, 0, 805306370, -589829, 131072, 268435459, -655364, 0, 2, -589830, 65536, 268435457, -589826, 131072, 268435458, 65537, 327680, 0, 65539, 327680, 0, 65538, 327680, 0)
 
 [node name="Waypoints" type="Node2D" parent="."]
 position = Vector2(-125, -122)
 
 [node name="Marker0" type="Marker2D" parent="Waypoints"]
-position = Vector2(440, 576)
+position = Vector2(562, 736)
 
 [node name="Marker1" type="Marker2D" parent="Waypoints"]
-position = Vector2(440, 439)
+position = Vector2(562, 560)
 
 [node name="Marker2" type="Marker2D" parent="Waypoints"]
-position = Vector2(687, 439)
+position = Vector2(919, 560)
 
 [node name="Marker3" type="Marker2D" parent="Waypoints"]
-position = Vector2(941, 180)
+position = Vector2(1270, 203)
 
 [node name="Marker4" type="Marker2D" parent="Waypoints"]
-position = Vector2(187, 440)
+position = Vector2(212, 561)
 
 [node name="Marker5" type="Marker2D" parent="Waypoints"]
-position = Vector2(188, 187)
+position = Vector2(212, 210)
+
+[node name="Marker5a" type="Marker2D" parent="Waypoints"]
+position = Vector2(36, 209)
 
 [node name="Marker6" type="Marker2D" parent="Waypoints"]
-position = Vector2(441, 183)
+position = Vector2(37, 385)
+
+[node name="Marker6a" type="Marker2D" parent="Waypoints"]
+position = Vector2(36, 553)
 
 [node name="Marker7" type="Marker2D" parent="Waypoints"]
-position = Vector2(689, -62)
+position = Vector2(-138, 561)
+
+[node name="Marker8" type="Marker2D" parent="Waypoints"]
+position = Vector2(-488, 560)
+
+[node name="Marker8a" type="Marker2D" parent="Waypoints"]
+position = Vector2(-488, 734)
+
+[node name="Marker8b" type="Marker2D" parent="Waypoints"]
+position = Vector2(-665, 560)
+
+[node name="Marker9" type="Marker2D" parent="Waypoints"]
+position = Vector2(-663, 735)
+
+[node name="Marker10" type="Marker2D" parent="Waypoints"]
+position = Vector2(-488, 203)
+
+[node name="Marker11" type="Marker2D" parent="Waypoints"]
+position = Vector2(-145, -140)
+
+[node name="Marker12" type="Marker2D" parent="Waypoints"]
+position = Vector2(212, -140)
+
+[node name="Marker13" type="Marker2D" parent="Waypoints"]
+position = Vector2(562, -140)
+
+[node name="Marker14" type="Marker2D" parent="Waypoints"]
+position = Vector2(-481, -490)
+
+[node name="Marker15" type="Marker2D" parent="Waypoints"]
+position = Vector2(-837, -490)
+
+[node name="Marker16" type="Marker2D" parent="Waypoints"]
+position = Vector2(-838, -134)
+
+[node name="Marker17" type="Marker2D" parent="Waypoints"]
+position = Vector2(-1194, -497)
+
+[node name="Marker18" type="Marker2D" parent="Waypoints"]
+position = Vector2(-838, -846)
+
+[node name="Marker19" type="Marker2D" parent="Waypoints"]
+position = Vector2(-495, -1190)
+
+[node name="Marker20" type="Marker2D" parent="Waypoints"]
+position = Vector2(-137, -1190)
+
+[node name="Marker20a" type="Marker2D" parent="Waypoints"]
+position = Vector2(-137, -1018)
+
+[node name="Marker21" type="Marker2D" parent="Waypoints"]
+position = Vector2(38, -1014)
+
+[node name="Marker22" type="Marker2D" parent="Waypoints"]
+position = Vector2(-137, -1540)
+
+[node name="Marker23" type="Marker2D" parent="Waypoints"]
+position = Vector2(-488, -1540)
+
+[node name="Marker24" type="Marker2D" parent="Waypoints"]
+position = Vector2(-838, -1540)
+
+[node name="Marker25" type="Marker2D" parent="Waypoints"]
+position = Vector2(-845, -1897)
+
+[node name="Marker26" type="Marker2D" parent="Waypoints"]
+position = Vector2(212, -1190)
+
+[node name="Marker26a" type="Marker2D" parent="Waypoints"]
+position = Vector2(383, -1190)
+
+[node name="Marker27" type="Marker2D" parent="Waypoints"]
+position = Vector2(212, -1542)
+
+[node name="Marker46" type="Marker2D" parent="Waypoints"]
+position = Vector2(560, -1542)
+
+[node name="Marker46a" type="Marker2D" parent="Waypoints"]
+position = Vector2(561, -1366)
+
+[node name="Marker28" type="Marker2D" parent="Waypoints"]
+position = Vector2(381, -1368)
+
+[node name="Marker29" type="Marker2D" parent="Waypoints"]
+position = Vector2(387, -1014)
+
+[node name="Marker30" type="Marker2D" parent="Waypoints"]
+position = Vector2(743, -1014)
+
+[node name="Marker31" type="Marker2D" parent="Waypoints"]
+position = Vector2(1088, -664)
+
+[node name="Marker32" type="Marker2D" parent="Waypoints"]
+position = Vector2(387, -665)
+
+[node name="Marker33" type="Marker2D" parent="Waypoints"]
+position = Vector2(737, -665)
+
+[node name="Marker34" type="Marker2D" parent="Waypoints"]
+position = Vector2(1438, -664)
+
+[node name="Marker34a" type="Marker2D" parent="Waypoints"]
+position = Vector2(1438, -494)
+
+[node name="Marker35" type="Marker2D" parent="Waypoints"]
+position = Vector2(1255, -491)
+
+[node name="Marker36" type="Marker2D" parent="Waypoints"]
+position = Vector2(913, -140)
+
+[node name="Marker37" type="Marker2D" parent="Waypoints"]
+position = Vector2(912, 211)
+
+[node name="Marker38" type="Marker2D" parent="Waypoints"]
+position = Vector2(569, 211)
+
+[node name="Marker39" type="Marker2D" parent="Waypoints"]
+position = Vector2(738, -313)
+
+[node name="Marker39a" type="Marker2D" parent="Waypoints"]
+position = Vector2(564, -315)
+
+[node name="Marker40" type="Marker2D" parent="Waypoints"]
+position = Vector2(563, -490)
+
+[node name="Marker41" type="Marker2D" parent="Waypoints"]
+position = Vector2(212, -489)
+
+[node name="Marker42" type="Marker2D" parent="Waypoints"]
+position = Vector2(213, -847)
+
+[node name="Marker43" type="Marker2D" parent="Waypoints"]
+position = Vector2(-145, -489)
+
+[node name="Marker44" type="Marker2D" parent="Waypoints"]
+position = Vector2(212, 911)
+
+[node name="Marker45" type="Marker2D" parent="Waypoints"]
+position = Vector2(-139, 911)
+
+[node name="Marker44" type="Marker2D" parent="Waypoints/Marker45"]
+position = Vector2(212, 911)
 
 [node name="GraphManager" type="Node" parent="."]
 script = ExtResource("1_lnu2h")
 
+[node name="Player" parent="." instance=ExtResource("1_uwrxv")]
+position = Vector2(438, 616)
+
 [node name="Enemy" parent="." instance=ExtResource("4_lbhrr")]
-position = Vector2(315, 444)
+position = Vector2(900, 450)
