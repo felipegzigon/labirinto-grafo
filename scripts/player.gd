@@ -15,6 +15,12 @@ var current_marker: String = ""  # Marcador atual onde o jogador está
 var is_moving: bool = false  # Flag para impedir interrupção do movimento
 var movement_tween: Tween = null
 
+# Sistema de vida
+@export var max_health := 2  # Vida máxima (2 colisões = game over)
+var current_health: int = 2  # Vida atual
+var can_take_damage: bool = true  # Flag para evitar múltiplas colisões no mesmo frame
+var damage_cooldown: float = 0.0  # Cooldown entre danos (em segundos)
+
 # Direções
 enum Direction {UP, DOWN, LEFT, RIGHT}
 
@@ -38,6 +44,12 @@ func _ready():
 	
 	# Posicionar no marcador inicial - IMPORTANTE: fazer isso após carregar as posições
 	_position_at_marker0()
+	
+	# Inicializar vida
+	current_health = max_health
+	can_take_damage = true
+	damage_cooldown = 0.0
+	print("Vida inicial: ", current_health)
 
 func _position_at_marker0():
 	"""Posiciona o jogador no Marker0"""
@@ -373,6 +385,11 @@ func _on_movement_complete(marker_name: String):
 	else:
 		print("✓ Chegou em: ", current_marker)
 	
+	# Verificar se chegou no Marker28 (vitória)
+	if marker_name == "Marker28":
+		_show_win_screen()
+		return
+	
 	_print_available_neighbors()
 
 # Funções de névoa removidas
@@ -388,24 +405,178 @@ func _print_available_neighbors():
 	else:
 		print("  → Vizinhos disponíveis: ", neighbors)
 
+func _take_damage():
+	"""Reduz a vida do player quando colidir com o inimigo"""
+	if current_health <= 0:
+		return  # Já está morto
+	
+	if not can_take_damage:
+		return  # Ainda está em cooldown
+	
+	# Ativar cooldown para evitar múltiplas colisões
+	can_take_damage = false
+	damage_cooldown = 1.0  # 1 segundo de cooldown entre danos
+	
+	# Reduzir vida
+	current_health -= 1
+	print("⚠️ COLISÃO COM INIMIGO! Vida restante: ", current_health, "/", max_health)
+	
+	# Respawnar o inimigo
+	_respawn_enemy_at_start()
+	
+	# Verificar se o player morreu
+	if current_health <= 0:
+		_game_over()
+
 func _respawn_enemy_at_start():
-	"""Respawna o inimigo na posição inicial (Marker0) quando colidir com o player"""
+	"""Respawna o inimigo em um marcador aleatório (exceto Marker0) quando colidir com o player"""
 	if not enemy:
 		return
 	
-	if not marker_nodes.has("Marker0"):
-		print("ERRO: Marker0 não encontrado para respawn do inimigo!")
-		return
-	
-	# Respawnar o inimigo no Marker0
-	var marker0_pos = marker_nodes["Marker0"]
-	enemy.global_position = marker0_pos
-	
-	# Resetar o estado do inimigo (reiniciar o caminho)
+	# Resetar o estado do inimigo (reiniciar o caminho) - isso já escolhe um marcador aleatório
 	if enemy.has_method("reset_to_start"):
 		enemy.reset_to_start()
+
+func _game_over():
+	"""Exibe tela de game over, pausa o jogo e reinicia após 2 segundos"""
+	print("💀 GAME OVER! Vida esgotada. Pausando jogo...")
 	
-	print("⚠️ COLISÃO COM INIMIGO! Inimigo respawnado em Marker0")
+	# Pausar o jogo
+	get_tree().paused = true
+	
+	# Criar tela de game over simples
+	_show_game_over_screen()
+	
+	# Aguardar 2 segundos (usar timer que funciona mesmo com jogo pausado)
+	var timer = Timer.new()
+	timer.wait_time = 2.0
+	timer.one_shot = true
+	timer.process_mode = Node.PROCESS_MODE_ALWAYS  # Processar mesmo com jogo pausado
+	get_tree().root.add_child(timer)
+	timer.timeout.connect(_restart_game)
+	timer.start()
+	
+	print("Jogo pausado. Reiniciando em 2 segundos...")
+
+func _restart_game():
+	"""Remove o overlay de game over, despausa o jogo e reinicia a cena"""
+	print("Reiniciando jogo...")
+	
+	# Remover o overlay de game over
+	_remove_game_over_screen()
+	
+	# Despausar o jogo antes de reiniciar
+	get_tree().paused = false
+	
+	# Reiniciar a cena atual
+	get_tree().reload_current_scene()
+
+func _remove_game_over_screen():
+	"""Remove a tela de game over do jogo"""
+	var game_over_layer = get_tree().root.get_node_or_null("GameOverLayer")
+	if game_over_layer:
+		game_over_layer.queue_free()
+		print("Overlay de game over removido")
+
+func _show_win_screen():
+	"""Exibe tela de vitória e pausa o jogo"""
+	print("🎉 VITÓRIA! Chegou no Marker28!")
+	
+	# Pausar o jogo
+	get_tree().paused = true
+	
+	# Criar CanvasLayer para a tela de vitória
+	var win_layer = CanvasLayer.new()
+	win_layer.name = "WinLayer"
+	get_tree().root.add_child(win_layer)
+	
+	# Criar fundo escuro
+	var background = ColorRect.new()
+	background.color = Color(0, 0, 0, 0.8)  # Preto semi-transparente
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	background.set_offsets_preset(Control.PRESET_FULL_RECT)
+	win_layer.add_child(background)
+	
+	# Criar container central para organizar elementos
+	var container = VBoxContainer.new()
+	container.set_anchors_preset(Control.PRESET_CENTER)
+	container.add_theme_constant_override("separation", 30)
+	win_layer.add_child(container)
+	
+	# Criar label de Vitória
+	var label = Label.new()
+	label.text = "VITÓRIA!"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 72)
+	label.add_theme_color_override("font_color", Color(0, 1, 0))  # Verde
+	container.add_child(label)
+	
+	# Criar label de mensagem
+	var message_label = Label.new()
+	message_label.text = "Você fugiu do esqueleto molestador!"
+	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message_label.add_theme_font_size_override("font_size", 32)
+	message_label.add_theme_color_override("font_color", Color(1, 1, 1))  # Branco
+	container.add_child(message_label)
+	
+	# Criar botão de recomeçar
+	var restart_button = Button.new()
+	restart_button.text = "Recomeçar"
+	restart_button.add_theme_font_size_override("font_size", 36)
+	restart_button.custom_minimum_size = Vector2(200, 60)
+	restart_button.pressed.connect(_restart_from_win)
+	container.add_child(restart_button)
+
+func _restart_from_win():
+	"""Remove a tela de vitória, despausa e reinicia o jogo"""
+	print("Reiniciando jogo após vitória...")
+	
+	# Remover tela de vitória
+	var win_layer = get_tree().root.get_node_or_null("WinLayer")
+	if win_layer:
+		win_layer.queue_free()
+	
+	# Despausar o jogo antes de reiniciar
+	get_tree().paused = false
+	
+	# Reiniciar a cena atual
+	get_tree().reload_current_scene()
+
+func _show_game_over_screen():
+	"""Cria e exibe uma tela de game over simples"""
+	# Criar CanvasLayer para a tela de game over
+	var game_over_layer = CanvasLayer.new()
+	game_over_layer.name = "GameOverLayer"
+	get_tree().root.add_child(game_over_layer)
+	
+	# Criar fundo escuro
+	var background = ColorRect.new()
+	background.color = Color(0, 0, 0, 0.8)  # Preto semi-transparente
+	background.set_anchors_preset(Control.PRESET_FULL_RECT)
+	background.set_offsets_preset(Control.PRESET_FULL_RECT)
+	game_over_layer.add_child(background)
+	
+	# Criar label de Game Over
+	var label = Label.new()
+	label.text = "GAME OVER"
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.add_theme_font_size_override("font_size", 72)
+	label.add_theme_color_override("font_color", Color(1, 0, 0))  # Vermelho
+	label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	label.set_offsets_preset(Control.PRESET_FULL_RECT)
+	game_over_layer.add_child(label)
+	
+	# Criar label de "Reiniciando..."
+	var restart_label = Label.new()
+	restart_label.text = "Reiniciando em 2 segundos..."
+	restart_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	restart_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	restart_label.add_theme_font_size_override("font_size", 24)
+	restart_label.add_theme_color_override("font_color", Color(1, 1, 1))  # Branco
+	restart_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	restart_label.position.y += 100  # Deslocar para baixo
+	game_over_layer.add_child(restart_label)
 
 func _physics_process(delta):
 	# Garantir que o movimento do tween seja processado suavemente
@@ -419,12 +590,22 @@ func _physics_process(delta):
 		# Quando não está se movendo, também garantir que não há velocidade residual
 		velocity = Vector2.ZERO
 	
+	# Atualizar cooldown de dano
+	if damage_cooldown > 0.0:
+		damage_cooldown -= delta
+		if damage_cooldown <= 0.0:
+			can_take_damage = true
+	
 	# Verificar colisão com o inimigo
 	_check_enemy_collision()
 
 func _check_enemy_collision():
 	"""Verifica se o player colidiu com o inimigo e respawna se necessário"""
 	if not enemy:
+		return
+	
+	# Se não pode tomar dano (cooldown ativo), ignorar
+	if not can_take_damage:
 		return
 	
 	# Calcular distância entre player e inimigo
@@ -434,7 +615,7 @@ func _check_enemy_collision():
 	var collision_distance = 30.0  # pixels
 	
 	if distance < collision_distance:
-		# Colisão detectada! Respawnar o inimigo na posição inicial (Marker0)
-		_respawn_enemy_at_start()
+		# Colisão detectada! Reduzir vida e respawnar inimigo
+		_take_damage()
 	
 # Atualização de névoa removida
