@@ -5,7 +5,8 @@ var marker_nodes = {}
 var current_tween: Tween = null  # Referência ao tween atual
 var current_marker: String = ""  # Marcador atual onde o inimigo está
 var visited_markers: Array = []  # Marcadores já visitados (para DFS)
-var speed: float = 0.0  # Velocidade será calculada baseada no player
+var speed: float = 0.0  # Velocidade atual
+var base_speed: float = 0.0  # Velocidade base (30% mais rápido que o player)
 var player: CharacterBody2D = null  # Referência ao player
 var is_chasing: bool = false  # Flag para modo perseguição
 
@@ -23,16 +24,19 @@ func _ready():
 	if player:
 		# Tentar acessar a propriedade movement_speed do player
 		if "movement_speed" in player:
-			speed = player.movement_speed * 1.3  # 30% mais rápido
-			print("Velocidade do inimigo: ", speed, " (Player: ", player.movement_speed, ")")
+			base_speed = player.movement_speed * 1.3  # 30% mais rápido
+			speed = base_speed
+			print("Velocidade base do inimigo: ", base_speed, " (Player: ", player.movement_speed, ")")
 		else:
 			# Fallback se a propriedade não existir
-			speed = 260.0 * 1.3  # 30% mais que a velocidade padrão do player
-			print("Velocidade do inimigo (fallback - propriedade não encontrada): ", speed)
+			base_speed = 260.0 * 1.3  # 30% mais que a velocidade padrão do player
+			speed = base_speed
+			print("Velocidade base do inimigo (fallback - propriedade não encontrada): ", base_speed)
 	else:
 		# Fallback se não conseguir acessar o player
-		speed = 260.0 * 1.3  # 30% mais que a velocidade padrão do player
-		print("Velocidade do inimigo (fallback - player não encontrado): ", speed)
+		base_speed = 260.0 * 1.3  # 30% mais que a velocidade padrão do player
+		speed = base_speed
+		print("Velocidade base do inimigo (fallback - player não encontrado): ", base_speed)
 
 	# Escolher um marcador aleatório para spawn (exceto Marker0 onde o player nasce)
 	var spawn_marker = _get_random_spawn_marker()
@@ -193,12 +197,16 @@ func _check_player_proximity():
 	if player_is_nearby and not is_chasing:
 		# Ativar modo perseguição
 		is_chasing = true
+		speed = base_speed * 0.5  # Reduzir velocidade em 50% durante perseguição
 		print("🔍 MODO PERSEGUIÇÃO ATIVADO! Player detectado em ", player_marker, " (alcance: 2 marcadores)")
+		print("   Velocidade reduzida para: ", speed, " (50% da velocidade base)")
 		_chase_player()
 	elif not player_is_nearby and is_chasing:
 		# Desativar modo perseguição
 		is_chasing = false
+		speed = base_speed  # Restaurar velocidade original
 		print("🔍 MODO PERSEGUIÇÃO DESATIVADO. Voltando para DFS")
+		print("   Velocidade restaurada para: ", speed)
 	elif is_chasing:
 		# Continuar perseguindo
 		_chase_player()
@@ -441,6 +449,10 @@ func reset_to_start():
 	if current_tween and current_tween.is_valid():
 		current_tween.kill()
 		current_tween = null
+	
+	# Resetar modo perseguição e velocidade
+	is_chasing = false
+	speed = base_speed  # Restaurar velocidade base
 	
 	# Escolher um marcador aleatório para respawn (exceto Marker0)
 	var spawn_marker = _get_random_spawn_marker()

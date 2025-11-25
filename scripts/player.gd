@@ -513,7 +513,7 @@ func _show_win_screen():
 	
 	# Criar label de mensagem
 	var message_label = Label.new()
-	message_label.text = "Você fugiu do esqueleto molestador!"
+	message_label.text = "Você fugiu!"
 	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	message_label.add_theme_font_size_override("font_size", 32)
 	message_label.add_theme_color_override("font_color", Color(1, 1, 1))  # Branco
